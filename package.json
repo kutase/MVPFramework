@@ -1,8 +1,8 @@
 {
   "name": "com.nebulateme.mvp_framework",
   "version": "1.1.0",
-  "displayName": "MVC Framework",
-  "description": "MVC Framework for Unity",
+  "displayName": "MVP Framework",
+  "description": "MVP Framework for Unity",
   "unity": "2020.3",
   "unityRelease": "42f1",
   "documentationUrl": "https://github.com/kutase/MVPFramework",
