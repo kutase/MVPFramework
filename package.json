@@ -1,0 +1,26 @@
+{
+  "name": "com.nebulateme.mvp_framework",
+  "version": "1.1.0",
+  "displayName": "MVC Framework",
+  "description": "MVC Framework for Unity",
+  "unity": "2020.3",
+  "unityRelease": "42f1",
+  "documentationUrl": "https://github.com/kutase/MVPFramework",
+  "changelogUrl": "https://github.com/kutase/MVPFramework",
+  "licensesUrl": "https://github.com/kutase/MVPFramework/blob/main/LICENSE",
+  "git-dependencies": [
+    "https://github.com/Nebulate-me/DI-Tools.git",
+    "https://github.com/Nebulate-me/SignalsHub.git"
+  ],
+  "dependencies": {
+ },
+ "keywords": [
+    "windows",
+    "mvp"
+  ],
+  "author": {
+    "name": "Nebulate.me",
+    "email": "admin@nebulate.me",
+    "url": "https://nebulate.me"
+  }
+}

@@ -1,0 +1,18 @@
+{
+    "name": "MVCFramework",
+    "rootNamespace": "",
+    "references": [
+        "GUID:0d8beb7f090555447a6cf5ce9e54dbb4",
+        "GUID:302472a381cc7984983a4abed6eed6ec",
+        "GUID:f918a07d9f9cbe04b8f2d3ce530b9bee"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
