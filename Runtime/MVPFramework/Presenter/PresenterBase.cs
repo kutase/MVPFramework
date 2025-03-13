@@ -19,6 +19,7 @@ namespace MVPFramework.Presenter
         private readonly IEventsStore eventsStore;
 
         private readonly LinkedList<IWidget> widgets = new();
+        private readonly LinkedList<IWidget> pooledWidgets = new();
         protected readonly TModel Model;
         protected TView View;
 
@@ -127,13 +128,17 @@ namespace MVPFramework.Presenter
         {
             var widget = WidgetFactory.Spawn<T>();
             widget.SetProps(widgetProps);
-            widgets.AddLast(widget);
+            pooledWidgets.AddLast(widget);
             return widget;
         }
 
         private void ActivateWidgets()
         {
             foreach (var widget in widgets)
+                if (!widget.IsManualLifecycleMode)
+                    widget.Activate();
+
+            foreach (var widget in pooledWidgets)
                 if (!widget.IsManualLifecycleMode)
                     widget.Activate();
         }
@@ -146,9 +151,10 @@ namespace MVPFramework.Presenter
                 OnBeforeChildWidgetDeactivated(widget);
                 if (!widget.IsManualLifecycleMode) 
                     widget.Deactivate();
+            }
 
-                if (!(widget is IPoolableWidget poolableWidget)) continue;
-
+            foreach (var widget in pooledWidgets)
+            {
                 WidgetFactory.Despawn(poolableWidget);
                 poolableWidgets ??= ListPool<IWidget>.Instance.Spawn();
                 poolableWidgets.Add(widget);
@@ -157,7 +163,8 @@ namespace MVPFramework.Presenter
             if (poolableWidgets == null) return;
 
             foreach (var poolableWidget in poolableWidgets) 
-                widgets.Remove(poolableWidget);
+                pooledWidgets.Remove(poolableWidget);
+
             ListPool<IWidget>.Instance.Despawn(poolableWidgets);
         }
 
@@ -167,9 +174,16 @@ namespace MVPFramework.Presenter
                 DeactivateWidget(widget);
         }
 
+        pritected void DespawnWidget(IWidget widget)
+        {
+            if (pooledWidgets.Remove(widget))
+                DeactivateWidget(widget);
+        }
+
         private void DeactivateWidget(IWidget widget)
         {
             OnBeforeChildWidgetDeactivated(widget);
+
             if (!widget.IsManualLifecycleMode)
                 widget.Deactivate();
 
