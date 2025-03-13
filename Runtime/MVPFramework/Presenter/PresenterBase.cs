@@ -155,6 +155,7 @@ namespace MVPFramework.Presenter
 
             foreach (var widget in pooledWidgets)
             {
+                var poolableWidget = widget as IPoolableWidget;
                 WidgetFactory.Despawn(poolableWidget);
                 poolableWidgets ??= ListPool<IWidget>.Instance.Spawn();
                 poolableWidgets.Add(widget);
