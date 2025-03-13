@@ -174,7 +174,7 @@ namespace MVPFramework.Presenter
                 DeactivateWidget(widget);
         }
 
-        pritected void DespawnWidget(IWidget widget)
+        protected void DespawnWidget(IWidget widget)
         {
             if (pooledWidgets.Remove(widget))
                 DeactivateWidget(widget);
