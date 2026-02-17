@@ -17,6 +17,7 @@
   - [Events System](#events-system)
 - [Usage](#-usage)
 - [Lifecycle](#-lifecycle)
+- [Project Structure Recommendations](#-project-structure-recommendations)
 - [Installation](#-installation)
 
 ---
@@ -1024,7 +1025,7 @@ _Common/
 
 ### Complete Example: Confirm Popup
 
-Real production structure from crown_fortress:
+Real production structure example:
 
 ```
 Popups/Confirm/
