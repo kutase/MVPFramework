@@ -6,19 +6,19 @@
 
 ## 📖 Table of Contents
 
-- [Core Concepts](#core-concepts)
-- [Architecture](#architecture)
-- [Framework Components](#framework-components)
+- [Core Concepts](#-core-concepts)
+- [Architecture](#-architecture)
+- [Framework Components](#-framework-components)
   - [Presenter](#presenter)
   - [View](#view)
   - [Model](#model)
   - [Widgets](#widgets)
   - [Reactive Properties](#reactive-properties)
   - [Events System](#events-system)
-- [Usage](#usage)
-- [Lifecycle](#lifecycle)
-- [Examples](#examples)
-- [Installation](#installation)
+- [Usage](#-usage)
+- [Lifecycle](#-lifecycle)
+- [Examples](#-examples)
+- [Installation](#-installation)
 
 ---
 
@@ -43,22 +43,7 @@ MVP Framework separates application logic into three main layers:
 
 ## 🏗️ Architecture
 
-```mermaid
-graph TB
-    P[Presenter] --> M[Model]
-    P --> V[View]
-    P --> W[Widgets]
-    M --> RP[ReactiveProperty]
-    M --> RT[ReactiveTrigger]
-    W --> WV[WidgetView]
-    P --> ES[EventsStore]
-    W --> ES
-    
-    style P fill:#4A90E2
-    style M fill:#7ED321
-    style V fill:#F5A623
-    style W fill:#BD10E0
-```
+<img width="1211" height="855" alt="MVPFramework drawio" src="https://github.com/user-attachments/assets/f66f3045-6c43-4af5-9f3d-177ddd2c7107" />
 
 ---
 
@@ -588,7 +573,7 @@ public class ToggleGroupWidget : CompositeWidget<ToggleGroupWidgetView, ToggleGr
    Activate()      |
        ↓           |
     [Active] ←→ [Hidden]
-       ↓       Hide()
+       ↓         Hide()
    Deactivate()
 ```
 
@@ -615,10 +600,6 @@ public class ToggleGroupWidget : CompositeWidget<ToggleGroupWidgetView, ToggleGr
 5. `View.Hide()`
 
 ---
-
-## 📚 Examples
-
-Detailed implementation examples are available in the `Examples` folder (if included in the package).
 
 ### Component Interaction Diagram
 
