@@ -190,7 +190,7 @@ public class MyModel : ModelBase<MyData>
 }
 ```
 
-#### Core Methods and Events
+**Core Methods and Events:**
 
 | Member | Description |
 |--------|-------------|
@@ -203,7 +203,7 @@ public class MyModel : ModelBase<MyData>
 | `Select<TOut>(Func)` | Create derived property |
 | `Where(Func)` | Filter changes |
 
-#### Usage Examples
+**Usage Examples:**
 
 ```csharp
 // Basic usage
@@ -217,6 +217,266 @@ isHighScore.OnChanged.AddListener(isHigh => scoreText.color = isHigh ? Color.gol
 // Conditional updates
 var positiveScore = score.Where(s => s > 0);
 ```
+
+---
+
+#### CompositeReactiveProperty<T1, T2>
+
+Combines multiple reactive properties into one event. When any source property changes, `OnChanged` fires with all current values.
+
+**Available Overloads:**
+- `CompositeReactiveProperty<T1, T2>` — 2 properties
+- `CompositeReactiveProperty<T1, T2, T3>` — 3 properties
+- `CompositeReactiveProperty<T1, T2, T3, T4>` — 4 properties
+
+**Real Example from WayPointProgressData:**
+
+```csharp
+public class WayPointProgressData
+{
+    public WayPointProgressData()
+    {
+        // Combine Value and MaxValue into one composite
+        ValueComposite = new CompositeReactiveProperty<int, int>(
+            Value,
+            MaxValue
+        );
+    }
+
+    public ReactiveProperty<int> Value { get; set; } = new();
+    public ReactiveProperty<int> MaxValue { get; set; } = new();
+    public CompositeReactiveProperty<int, int> ValueComposite { get; set; }
+}
+```
+
+**Usage in Widget:**
+
+```csharp
+// Subscribe to composite event - fires when Value OR MaxValue changes
+SubscribeEvent(this, Data.ValueComposite.OnChanged, UpdateProgressBar);
+
+private void UpdateProgressBar(int currentValue, int maxValue)
+{
+    progressBar.fillAmount = (float)currentValue / maxValue;
+    progressText.text = $"{currentValue}/{maxValue}";
+}
+```
+
+**Factory Method Example:**
+
+```csharp
+public class LevelStartPopupData
+{
+    public LevelStartPopupData()
+    {
+        // Using factory for cleaner syntax
+        TowersAmountComposite = CompositeReactivePropertyFactory.Create(
+            SelectedTowersCount, 
+            MaxTowersAmount
+        );
+    }
+
+    public ReactiveProperty<int> SelectedTowersCount { get; set; } = new();
+    public ReactiveProperty<int> MaxTowersAmount { get; set; } = new();
+    public CompositeReactiveProperty<int, int> TowersAmountComposite { get; set; }
+}
+```
+
+---
+
+#### ConditionalCompositeReactiveProperty
+
+Combines multiple reactive properties using boolean logic (AND/OR). Evaluates predicates and returns a single boolean result.
+
+**Combination Modes:**
+- `CombinationMode.Any` — OR logic (true if ANY condition is true)
+- `CombinationMode.All` — AND logic (true if ALL conditions are true)
+
+**Core Methods:**
+
+| Method | Description |
+|--------|-------------|
+| `Add<T>(property, predicate)` | Add property with condition |
+| `Remove<T>(property)` | Remove property from composition |
+| `ClearAll()` | Remove all properties and unsubscribe |
+| `Value` | Current boolean result (read-only) |
+| `Mode` | Get/set combination mode (Any/All) |
+| `OnResultChanged` | Event fired when result changes |
+
+**Real Example from TechnologyCardWidgetData:**
+
+```csharp
+public class TechnologyCardWidgetData : IDisposable
+{
+    public ReactiveProperty<bool> IsPurchased { get; set; } = new();
+    
+    // Check if ALL previous cards have been purchased
+    public ConditionalCompositeReactiveProperty HasAllPrevCardsBeenPurchased { get; set; } = new(true)
+    {
+        Mode = ConditionalCompositeReactiveProperty.CombinationMode.All,
+    };
+
+    public List<TechnologyCardWidgetData> PrevCards { get; set; } = new();
+
+    public void Dispose()
+    {
+        HasAllPrevCardsBeenPurchased.ClearAll();
+    }
+}
+```
+
+**Usage in Model:**
+
+```csharp
+// Add each previous card's IsPurchased property
+foreach (var prevCard in technologyCard.PrevCards)
+{
+    // Card is available if previous card is purchased
+    technologyCard.HasAllPrevCardsBeenPurchased.Add(
+        prevCard.IsPurchased, 
+        isPurchased => isPurchased == true
+    );
+}
+
+// Subscribe to result changes
+SubscribeEvent(this, data.HasAllPrevCardsBeenPurchased.OnResultChanged, isAvailable =>
+{
+    // Enable/disable card based on whether all prerequisites are met
+    view.SetInteractable(isAvailable);
+});
+```
+
+**Additional Examples:**
+
+```csharp
+// OR logic example - any tower is selected
+var anyTowerSelected = new ConditionalCompositeReactiveProperty(false)
+{
+    Mode = ConditionalCompositeReactiveProperty.CombinationMode.Any
+};
+
+anyTowerSelected.Add(tower1.IsSelected, selected => selected);
+anyTowerSelected.Add(tower2.IsSelected, selected => selected);
+anyTowerSelected.Add(tower3.IsSelected, selected => selected);
+
+// Fires when at least one tower becomes selected
+anyTowerSelected.OnResultChanged.AddListener(anySelected =>
+{
+    startButton.SetEnabled(anySelected);
+});
+
+// AND logic example - all resources are sufficient
+var canAfford = new ConditionalCompositeReactiveProperty(true)
+{
+    Mode = ConditionalCompositeReactiveProperty.CombinationMode.All
+};
+
+canAfford.Add(goldAmount, gold => gold >= requiredGold);
+canAfford.Add(gemsAmount, gems => gems >= requiredGems);
+canAfford.Add(woodAmount, wood => wood >= requiredWood);
+
+// Fires only when ALL resources are sufficient
+canAfford.OnResultChanged.AddListener(affordable =>
+{
+    purchaseButton.SetEnabled(affordable);
+});
+```
+
+---
+
+#### ReactiveList<T>
+
+Observable list that fires events when items are added or removed.
+
+**Core Methods:**
+
+| Method | Description |
+|--------|-------------|
+| `Add(item, silently)` | Add item to list |
+| `Remove(item, silently)` | Remove specific item |
+| `Remove(predicate, silently)` | Remove item matching predicate |
+| `RemoveAll()` | Remove all items (fires events for each) |
+| `Clear()` | Clear list without events |
+| `Find(predicate)` | Find item matching predicate |
+| `FindIndex(predicate)` | Find index of item |
+| `Sort(comparer)` | Sort list |
+
+**Properties:**
+
+| Property | Description |
+|----------|-------------|
+| `Count` | Number of items |
+| `OnItemAdded` | Event fired when item is added |
+| `OnItemRemoved` | Event fired when item is removed |
+| `[index]` | Access item by index |
+
+**Real Example from LevelStartPopupData:**
+
+```csharp
+public class LevelStartPopupData
+{
+    // List of level modifiers
+    public ReactiveList<LevelModifierWidgetData> Modifiers { get; set; } = new();
+}
+```
+
+**Usage in Presenter:**
+
+```csharp
+protected override void SubscribeEvents()
+{
+    // React to modifiers being added
+    SubscribeEvent(this, Model.Data.Modifiers.OnItemAdded, OnModifierAdded);
+    
+    // React to modifiers being removed
+    SubscribeEvent(this, Model.Data.Modifiers.OnItemRemoved, OnModifierRemoved);
+}
+
+private void OnModifierAdded(LevelModifierWidgetData modifierData)
+{
+    // Spawn widget for new modifier
+    var widget = SpawnWidget<LevelModifierWidget>();
+    widget.Bind(View.GetNextModifierSlot(), modifierData);
+}
+
+private void OnModifierRemoved(LevelModifierWidgetData modifierData)
+{
+    // Find and despawn widget
+    var widget = widgets.Find(w => w.Data == modifierData);
+    DespawnWidget(widget);
+}
+```
+
+**Example from TowerDescriptionData:**
+
+```csharp
+public class TowerDescriptionData
+{
+    public ReactiveProperty<LocalizedString> Description { get; set; } = new();
+    
+    // Dynamic parameters for localized string
+    public ReactiveList<string> DescriptionParams { get; set; } = new();
+}
+```
+
+**Usage:**
+
+```csharp
+// Update description when parameters change
+SubscribeEvent(this, data.DescriptionParams.OnItemAdded, _ => UpdateDescription());
+SubscribeEvent(this, data.DescriptionParams.OnItemRemoved, _ => UpdateDescription());
+
+// Add/update parameters
+data.DescriptionParams.Clear();
+data.DescriptionParams.Add(damage.ToString());
+data.DescriptionParams.Add(range.ToString());
+data.DescriptionParams.Add(attackSpeed.ToString());
+
+// Remove silently (no event)
+data.DescriptionParams.Remove(oldParam, silently: true);
+```
+
+---
 
 #### ReactiveTrigger
 
