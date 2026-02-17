@@ -7,7 +7,7 @@
 ## 📖 Table of Contents
 
 - [Core Concepts](#-core-concepts)
-- [Architecture](#-architecture)
+- [Architecture](#%EF%B8%8F-architecture)
 - [Framework Components](#-framework-components)
   - [Presenter](#presenter)
   - [View](#view)
@@ -17,7 +17,6 @@
   - [Events System](#events-system)
 - [Usage](#-usage)
 - [Lifecycle](#-lifecycle)
-- [Examples](#-examples)
 - [Installation](#-installation)
 
 ---
