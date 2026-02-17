@@ -891,6 +891,181 @@ sequenceDiagram
 
 ---
 
+## 📁 Project Structure Recommendations
+
+Based on production-tested patterns, here's the recommended folder structure for organizing MVP Framework screens and components.
+
+### Root Structure
+
+```
+Assets/
+└── _Screens/
+    ├── Battle/                    # Individual screen
+    ├── LevelSelect/               # Individual screen
+    ├── Popups/                    # All popups
+    │   ├── Confirm/
+    │   ├── Victory/
+    │   └── ...
+    └── _Common/                   # Shared components
+        ├── Widgets/
+        └── Sprites/
+```
+
+### Screen Folder Structure
+
+Each screen should follow this pattern:
+
+```
+Battle/
+├── Prefabs/
+│   └── BattleScreen.prefab       # Main screen prefab
+├── Scripts/
+│   ├── BattleScreenPresenter.cs
+│   ├── BattleScreenView.cs
+│   ├── BattleScreenModel.cs
+│   ├── BattleScreenData.cs
+│   ├── BattleScreenParams.cs      # Optional: opening parameters
+│   └── Widgets/                   # Screen-specific widgets
+│       ├── ActiveAbilityWidget/
+│       ├── TowerActionButton/
+│       └── ...
+└── Sprites/                       # Screen-specific sprites (optional)
+```
+
+**File Naming Convention:**
+- `{ScreenName}Presenter.cs`
+- `{ScreenName}View.cs`
+- `{ScreenName}Model.cs`
+- `{ScreenName}Data.cs`
+- `{ScreenName}Params.cs` (if needed)
+
+### Popup Folder Structure
+
+Popups follow the same pattern but are grouped together:
+
+```
+Popups/
+├── Common/
+│   └── Scripts/
+│       └── PopupView.cs           # Base popup view
+├── Confirm/
+│   ├── Prefabs/
+│   │   └── ConfirmPopup.prefab
+│   └── Scripts/
+│       ├── ConfirmPresenter.cs
+│       ├── ConfirmView.cs
+│       ├── ConfirmModel.cs
+│       ├── ConfirmData.cs
+│       ├── ConfirmPopupParams.cs
+│       └── ConfirmClosedSignal.cs # Optional: popup result signal
+├── Victory/
+│   └── ...
+└── Pause/
+    └── ...
+```
+
+**Benefits:**
+- All popups in one place
+- Easy to find and manage
+- Shared base popup class
+
+### Widget Folder Structure
+
+Each widget gets its own folder with all related files:
+
+```
+Widgets/
+├── Button/
+│   ├── Prefabs/
+│   │   └── ButtonWidget.prefab
+│   ├── Scripts/
+│   │   ├── ButtonWidget.cs
+│   │   ├── ButtonWidgetView.cs
+│   │   └── ButtonData.cs
+│   ├── Animations/                # Optional
+│   │   ├── ButtonPressed.anim
+│   │   └── ButtonNormal.anim
+│   └── Sprites/                   # Optional
+│       └── button_bg.png
+├── Toggle/
+│   ├── Scripts/
+│   │   ├── ToggleWidget.cs
+│   │   ├── ToggleWidgetView.cs
+│   │   ├── ToggleWidgetData.cs
+│   │   └── ToggleGroup/           # Sub-widgets
+│   │       ├── ToggleGroupWidget.cs
+│   │       ├── ToggleGroupWidgetView.cs
+│   │       └── ToggleGroupWidgetData.cs
+│   └── Prefabs/
+│       └── ToggleWidget.prefab
+└── Resource/
+    └── ...
+```
+
+**Widget File Naming:**
+- `{WidgetName}Widget.cs` — Widget logic
+- `{WidgetName}WidgetView.cs` — View (MonoBehaviour)
+- `{WidgetName}Data.cs` or `{WidgetName}WidgetData.cs` — Data class
+
+### _Common Folder
+
+Shared components used across multiple screens:
+
+```
+_Common/
+├── Widgets/                       # Reusable widgets
+│   ├── Button/
+│   ├── Toggle/
+│   ├── Resource/
+│   └── ...
+├── Sprites/                       # Shared sprites
+└── Notifiers/                     # Optional: notification system
+```
+
+### Complete Example: Confirm Popup
+
+Real production structure from crown_fortress:
+
+```
+Popups/Confirm/
+├── Prefabs/
+│   └── ConfirmPopup.prefab
+└── Scripts/
+    ├── ConfirmPresenter.cs        # 68 lines - manages logic
+    ├── ConfirmView.cs             # 33 lines - UI references
+    ├── ConfirmModel.cs            # 20 lines - data initialization
+    ├── ConfirmData.cs             # 13 lines - screen data
+    ├── ConfirmPopupParams.cs      # Opening parameters
+    └── ConfirmClosedSignal.cs     # Result signal
+```
+
+**File Organization Benefits:**
+- ✅ All related files together
+- ✅ Easy navigation
+- ✅ Clear separation of concerns
+- ✅ Scalable structure
+
+### Naming Conventions Summary
+
+| Type | Pattern | Example |
+|------|---------|---------|
+| **Screen** | `{Name}Screen{Type}.cs` | `BattleScreenPresenter.cs` |
+| **Popup** | `{Name}Popup{Type}.cs` or `{Name}{Type}.cs` | `ConfirmPresenter.cs` |
+| **Widget** | `{Name}Widget{Type}.cs` | `ButtonWidget.cs`, `ButtonWidgetView.cs` |
+| **Data** | `{Name}Data.cs` | `ConfirmData.cs`, `ButtonData.cs` |
+| **Params** | `{Name}Params.cs` | `BattleScreenParams.cs` |
+| **Signal** | `{Name}Signal.cs` | `ConfirmClosedSignal.cs` |
+
+### Tips
+
+1. **Keep It Flat**: Don't nest screens too deeply
+2. **Group by Feature**: Each screen/popup is self-contained
+3. **Shared First**: Put truly shared components in `_Common`
+4. **Prefab Organization**: Keep prefabs close to their scripts
+5. **Sprite Management**: Screen-specific sprites in screen folder, shared in `_Common/Sprites`
+
+---
+
 ## 📦 Installation
 
 ### Via Unity Package Manager
