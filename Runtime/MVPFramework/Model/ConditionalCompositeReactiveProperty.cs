@@ -48,7 +48,7 @@ namespace MVPFramework.Model
         // Добавляет свойство с предикатом (по умолчанию для bool)
         public void Add<T>(ReactiveProperty<T> property, Func<T, bool> predicate)// = null)
         {
-            if (property == null || _properties.Any(p => p.Source == property)) 
+            if (property == null || _properties.Any(p => p.Source == property))
                 return;
 
             // Для bool используем значение напрямую, если предикат не задан
@@ -61,11 +61,13 @@ namespace MVPFramework.Model
             //     throw new ArgumentException("");
             // }
 
-            var data = new PropertyData
+            PropertyData data = null;
+            data = new PropertyData
             {
                 Source = property,
                 Predicate = value => predicate.Invoke((T)value),
                 LastValue = property.Value,
+                UpdateLastValue = () => data.LastValue = property.Value,
             };
 
             UnityAction<T> listener = newValue => UpdateResult(triggeredBy: data, newValue: newValue);
@@ -109,11 +111,11 @@ namespace MVPFramework.Model
         }
 
         // Обновляет результат и триггерит событие при необходимости
-        private void UpdateResult(object triggeredBy = null, object newValue = null, 
+        private void UpdateResult(object triggeredBy = null, object newValue = null,
                                 bool forceNotify = false)
         {
             var previousResult = cachedValue;
-            
+
             // Обновляем значение триггерного свойства
             if (triggeredBy != null && newValue != null)
             {
@@ -121,6 +123,24 @@ namespace MVPFramework.Model
                 data.LastValue = newValue;
             }
 
+            RecalculateState();
+
+            if (forceNotify || cachedValue != previousResult)
+                OnResultChanged.Invoke(cachedValue);
+        }
+
+        public void ActualizeState()
+        {
+            foreach (var property in _properties)
+            {
+                property.UpdateLastValue();
+            }
+
+            RecalculateState();
+        }
+
+        private void RecalculateState()
+        {
             if (_properties.Count > 0)
             {
                 // Вычисляем новый результат
@@ -135,9 +155,6 @@ namespace MVPFramework.Model
             {
                 cachedValue = emptyValue;
             }
-
-            if (forceNotify || cachedValue != previousResult)
-                OnResultChanged.Invoke(cachedValue);
         }
 
         private class PropertyData
@@ -146,6 +163,7 @@ namespace MVPFramework.Model
             public object LastValue { get; set; }
             public Func<object, bool> Predicate { get; set; }
             public Action UnsubscribeAction { get; set; }
+            public Action UpdateLastValue { get; set; }
         }
     }
 }
