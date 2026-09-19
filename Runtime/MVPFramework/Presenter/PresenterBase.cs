@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using DITools;
 using MVPFramework.Events;
@@ -231,6 +231,16 @@ namespace MVPFramework.Presenter
         protected void SubscribeEvent<T1, T2>(object subscriber, UnityEvent<T1, T2> unityEvent, UnityAction<T1, T2> handler)
         {
             eventsStore.SubscribeEvent(subscriber, unityEvent, handler);
+        }
+
+        protected void SubscribeEvent(Action subscribe, Action unsubscribe)
+        {
+            eventsStore.SubscribeEvent(this, subscribe, unsubscribe);
+        }
+
+        protected void SubscribeEvent(object subscriber, Action subscribe, Action unsubscribe)
+        {
+            eventsStore.SubscribeEvent(subscriber, subscribe, unsubscribe);
         }
         
         protected void SubscribeSignal<T>(Action<T> handler)

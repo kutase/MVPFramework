@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine.Events;
 
@@ -28,6 +28,13 @@ namespace MVPFramework.Events
         public void Subscribe<T1, T2>(UnityEvent<T1, T2> unityEvent, UnityAction<T1, T2> handler)
         {
             var subscriber = EventSubscriber<T1, T2>.Pool.Spawn(unityEvent, handler);
+            eventSubscribers.Add(subscriber);
+        }
+
+        public void Subscribe(Action subscribe, Action unsubscribe)
+        {
+            subscribe?.Invoke();
+            var subscriber = ActionSubscriber.Pool.Spawn(unsubscribe);
             eventSubscribers.Add(subscriber);
         }
 

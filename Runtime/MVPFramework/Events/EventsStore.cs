@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using DITools;
 using UnityEngine.Events;
@@ -32,6 +32,12 @@ namespace MVPFramework.Events
         {
             var value = GetSubscriber(subscriber);
             value.Subscribe(unityEvent, handler);
+        }
+
+        public void SubscribeEvent(object subscriber, Action subscribe, Action unsubscribe)
+        {
+            var value = GetSubscriber(subscriber);
+            value.Subscribe(subscribe, unsubscribe);
         }
 
         public void SubscribeSignal<T>(object subscriber, Action<T> handler)

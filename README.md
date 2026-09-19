@@ -88,6 +88,12 @@ SubscribeEvent(this, view.OnButtonClicked, HandleButtonClick);
 // UnityEvent<T>
 SubscribeEvent<int>(this, view.OnValueChanged, HandleValueChanged);
 
+// Standard C# Events (Auto-unsubscribed on Deactivate)
+SubscribeEvent(
+    () => service.OnChanged += HandleChanged,
+    () => service.OnChanged -= HandleChanged
+);
+
 // Signal (requires SignalsHub)
 SubscribeSignal<MySignal>(HandleSignal);
 ```
